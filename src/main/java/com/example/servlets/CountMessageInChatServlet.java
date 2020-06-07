@@ -1,5 +1,10 @@
+/**
+ * Сервлет считает количество сообщений чата.
+ * **/
+
 package com.example.servlets;
 
+import com.example.Helper;
 import com.example.tables.MessageTable;
 
 import javax.servlet.annotation.WebServlet;
@@ -12,9 +17,11 @@ import java.io.PrintWriter;
 @WebServlet("/count_message_in_chat")
 public class CountMessageInChatServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        /** Получение данных. **/
         int id_chat = Integer.parseInt(request.getParameter("id_chat"));
+        /** Запросы и ответ. **/
         int count = MessageTable.countOfMessagesInChat(id_chat);
-        response.setContentType("text/html;charset=utf-8");
+        response.setContentType(Helper.ANSWER_HTML_TEXT);
         PrintWriter pw = response.getWriter();
         pw.println("" + count);
     }

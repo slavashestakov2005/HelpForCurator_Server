@@ -1,3 +1,7 @@
+/**
+ * Сервлет добавляет сообщения в чат.
+ * **/
+
 package com.example.servlets;
 
 import com.example.Helper;
@@ -13,14 +17,13 @@ import java.io.IOException;
 @WebServlet("/send")
 public class SendServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        /** Получение данных. **/
         int id_chat = Integer.parseInt(request.getParameter("id_chat"));
         int id_author = Integer.parseInt(request.getParameter("id_author"));
         String text = request.getParameter("text");
-        String time = Helper.currentTime();
+        String time = Helper.getCurrentTimeAsMicroseconds();
+        /** Запросы и ответ. **/
         Message message = new Message(id_chat, id_author, text, time);
         MessageTable.insert(message);
-        /*response.setContentType("text/html;charset=utf-8");
-        PrintWriter pw = response.getWriter();
-        pw.println(time);*/
     }
 }

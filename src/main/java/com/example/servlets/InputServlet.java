@@ -1,5 +1,10 @@
+/**
+ * Сервлет возвращает полную информацию пользователя.
+ * **/
+
 package com.example.servlets;
 
+import com.example.Helper;
 import com.example.tables.UsersTable;
 import com.example.tables.rows.User;
 
@@ -13,10 +18,12 @@ import java.io.PrintWriter;
 @WebServlet("/input")
 public class InputServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html;charset=utf-8");
-        PrintWriter writer = response.getWriter();
+        /** Получение данных. **/
         String login = request.getParameter("login");
+        /** Запросы и ответ. **/
         User user = UsersTable.select(login);
+        response.setContentType(Helper.ANSWER_HTML_TEXT);
+        PrintWriter writer = response.getWriter();
         writer.println(user.toString());
     }
 }

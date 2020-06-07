@@ -1,24 +1,28 @@
+/**
+ * Строка таблицы tables.UsersTable.
+ * */
+
 package com.example.tables.rows;
 
 import java.io.Serializable;
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     private int id;
-    private String login, password, phone, email, name, surname, middlename;
+    private String login, password, phone, email, name, surname, middleName;
 
     public User() { }
 
-    public User(String login, String password, String phone, String email, String name, String surname, String middlename) {
+    public User(String login, String password, String phone, String email, String name, String surname, String middleName) {
         this.login = login;
         this.password = password;
         this.phone = phone;
         this.email = email;
         this.name = name;
         this.surname = surname;
-        this.middlename = middlename;
+        this.middleName = middleName;
     }
 
-    public User(int id, String login, String password, String phone, String email, String name, String surname, String middlename) {
+    public User(int id, String login, String password, String phone, String email, String name, String surname, String middleName) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -26,7 +30,7 @@ public class User implements Serializable {
         this.email = email;
         this.name = name;
         this.surname = surname;
-        this.middlename = middlename;
+        this.middleName = middleName;
     }
 
     public int getId() {
@@ -81,15 +85,15 @@ public class User implements Serializable {
         this.surname = surname;
     }
 
-    public String getMiddlename() {
-        return middlename;
+    public String getMiddleName() {
+        return middleName;
     }
 
-    public void setMiddlename(String middlename) {
-        this.middlename = middlename;
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 
     public String toString(){
-        return "" + id + " | " + login + " | " + password + " | " + phone + " | " + email + " | " + name + " | " + surname + " | " + middlename;
+        return "" + id + " | " + login + " | " + password + " | " + phone + " | " + email + " | " + name + " | " + surname + " | " + middleName;
     }
 }

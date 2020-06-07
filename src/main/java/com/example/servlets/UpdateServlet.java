@@ -1,3 +1,7 @@
+/**
+ * Сервлет обновляет данные пользователя.
+ * **/
+
 package com.example.servlets;
 
 import com.example.tables.UsersTable;
@@ -11,14 +15,16 @@ import java.io.IOException;
 @WebServlet("/update")
 public class UpdateServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        /** Получение части данных. **/
         String type = request.getParameter("type");
         int id = Integer.parseInt(request.getParameter("id"));
+        /** Получение остальных данных и создание запросов. **/
         switch (type){
             case "name" :
                 String name = request.getParameter("name");
                 String surname = request.getParameter("surname");
-                String middlename = request.getParameter("middlename");
-                UsersTable.updateName(id, name, surname, middlename);
+                String middleName = request.getParameter("middlename");
+                UsersTable.updateName(id, name, surname, middleName);
                 break;
             case "contacts" :
                 String phone = request.getParameter("phone");

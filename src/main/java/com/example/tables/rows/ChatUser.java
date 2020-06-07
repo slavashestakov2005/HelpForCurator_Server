@@ -1,3 +1,7 @@
+/**
+ * Строка таблицы tables.ChatUserTable.
+ * */
+
 package com.example.tables.rows;
 
 import java.io.Serializable;

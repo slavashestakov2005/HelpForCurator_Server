@@ -1,36 +1,53 @@
+/**
+ * Запросы к таблице users из БД.
+ * */
+
 package com.example.tables;
 
 import com.example.Helper;
 import com.example.tables.rows.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class UsersTable {
     private static String table = "users";
+    private static Columns columns;
+
+    static{
+        columns = new Columns();
+        columns.add("ID", 1, "id");
+        columns.add("LOGIN", 2, "login");
+        columns.add("PASSWORD", 3, "password");
+        columns.add("PHONE", 4, "phone");
+        columns.add("EMAIL", 5, "email");
+        columns.add("NAME", 6, "_name");
+        columns.add("SURNAME",7, "_surname");
+        columns.add("MIDDLENAME", 8, "_middlename");
+    }
+
+    private static User getUserFromResultSet(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt(columns.getIndex("ID"));
+        String login = resultSet.getString(columns.getIndex("LOGIN"));
+        String password = resultSet.getString(columns.getIndex("PASSWORD"));
+        String phone = resultSet.getString(columns.getIndex("PHONE"));
+        String email = resultSet.getString(columns.getIndex("EMAIL"));
+        String name = resultSet.getString(columns.getIndex("NAME"));
+        String surname = resultSet.getString(columns.getIndex("SURNAME"));
+        String middleName = resultSet.getString(columns.getIndex("MIDDLENAME"));
+        return new User(id, login, password, phone, email, name, surname, middleName);
+
+    }
+
     public static ArrayList<User> select() {
         ArrayList<User> products = new ArrayList<User>();
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
                 Statement statement = conn.createStatement();
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table);
+                ResultSet resultSet = statement.executeQuery(SqlHelper.selectQuery(table));
                 while(resultSet.next()){
-
-                    int id = resultSet.getInt(1);
-                    String login = resultSet.getString(2);
-                    String password = resultSet.getString(3);
-                    String phone = resultSet.getString(4);
-                    String email = resultSet.getString(5);
-                    String name = resultSet.getString(6);
-                    String surname = resultSet.getString(7);
-                    String middlename = resultSet.getString(8);
-                    User user = new User(id, login, password, phone, email, name, surname, middlename);
-                    products.add(user);
+                    products.add(getUserFromResultSet(resultSet));
                 }
             }
         }
@@ -39,26 +56,18 @@ public class UsersTable {
         }
         return products;
     }
+
     public static User selectOne(int id) {
         User user = null;
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "SELECT * FROM " + table + " WHERE id=?";
+                String sql = SqlHelper.selectQuery(table, "*", columns.getName("ID"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setInt(1, id);
                     ResultSet resultSet = preparedStatement.executeQuery();
                     if(resultSet.next()){
-                        int resId = resultSet.getInt(1);
-                        String login = resultSet.getString(2);
-                        String password = resultSet.getString(3);
-                        String phone = resultSet.getString(4);
-                        String email = resultSet.getString(5);
-                        String name = resultSet.getString(6);
-                        String surname = resultSet.getString(7);
-                        String middlename = resultSet.getString(8);
-                        user = new User(resId, login, password, phone, email, name, surname, middlename);
+                        user = getUserFromResultSet(resultSet);
                     }
                 }
             }
@@ -74,20 +83,12 @@ public class UsersTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "SELECT * FROM " + table + " WHERE login = ?";
+                String sql = SqlHelper.selectQuery(table, "*", columns.getName("LOGIN"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, login);
                     ResultSet resultSet = preparedStatement.executeQuery();
                     if(resultSet.next()){
-                        int resId = resultSet.getInt(1);
-                        String password = resultSet.getString(3);
-                        String phone = resultSet.getString(4);
-                        String email = resultSet.getString(5);
-                        String name = resultSet.getString(6);
-                        String surname = resultSet.getString(7);
-                        String middlename = resultSet.getString(8);
-                        user = new User(resId, login, password, phone, email, name, surname, middlename);
+                        user = getUserFromResultSet(resultSet);
                     }
                 }
             }
@@ -102,7 +103,9 @@ public class UsersTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-                String sql = "INSERT INTO " + table + " (Login, Password, Phone, Email, _Name, _Surname, _Middlename) Values (?, ?, ?, ?, ?, ?, ?)";
+                String sql = SqlHelper.insertQuery(table,
+                        columns.getName("LOGIN"), columns.getName("PASSWORD"), columns.getName("PHONE"), columns.getName("EMAIL"),
+                        columns.getName("NAME"), columns.getName("SURNAME"), columns.getName("MIDDLENAME"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, user.getLogin());
                     preparedStatement.setString(2, user.getPassword());
@@ -110,7 +113,7 @@ public class UsersTable {
                     preparedStatement.setString(4, user.getEmail());
                     preparedStatement.setString(5, user.getName());
                     preparedStatement.setString(6, user.getSurname());
-                    preparedStatement.setString(7, user.getMiddlename());
+                    preparedStatement.setString(7, user.getMiddleName());
                     return preparedStatement.executeUpdate();
                 }
             }
@@ -122,12 +125,12 @@ public class UsersTable {
     }
 
     public static int update(User user) {
-
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "UPDATE " + table + " SET Login = ?, Password = ?, Phone = ?, Email = ?, _Name = ?,  _Surname = ?, _Middlename = ? WHERE id = ?";
+                String sql = SqlHelper.updateQuery(table, columns.getName("ID"), columns.getName("LOGIN"),
+                        columns.getName("PASSWORD"), columns.getName("PHONE"), columns.getName("EMAIL"),
+                        columns.getName("NAME"), columns.getName("SURNAME"), columns.getName("MIDDLENAME"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, user.getLogin());
                     preparedStatement.setString(2, user.getPassword());
@@ -135,7 +138,7 @@ public class UsersTable {
                     preparedStatement.setString(4, user.getEmail());
                     preparedStatement.setString(5, user.getName());
                     preparedStatement.setString(6, user.getSurname());
-                    preparedStatement.setString(7, user.getMiddlename());
+                    preparedStatement.setString(7, user.getMiddleName());
                     preparedStatement.setInt(8, user.getId());
                     return preparedStatement.executeUpdate();
                 }
@@ -146,15 +149,14 @@ public class UsersTable {
         }
         return 0;
     }
+
     public static int delete(int id) {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "DELETE FROM " + table + " WHERE id = ?";
+                String sql = SqlHelper.deleteQuery(table, columns.getName("ID"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setInt(1, id);
-
                     return  preparedStatement.executeUpdate();
                 }
             }
@@ -169,8 +171,7 @@ public class UsersTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "SELECT Password FROM " + table + " WHERE login = ?";
+                String sql = SqlHelper.selectQuery(table, columns.getName("PASSWORD"), columns.getName("LOGIN"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, login);
                     ResultSet resultSet = preparedStatement.executeQuery();
@@ -186,16 +187,16 @@ public class UsersTable {
         return "";
     }
 
-    public static void updateName(int id, String name, String surname, String middlename) {
+    public static void updateName(int id, String name, String surname, String middleName) {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "UPDATE " + table + " SET _Name = ?, _Surname = ?, _Middlename = ? WHERE id = ?";
+                String sql = SqlHelper.updateQuery(table, columns.getName("ID"),
+                        columns.getName("NAME"), columns.getName("SURNAME"), columns.getName("MIDDLENAME"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, name);
                     preparedStatement.setString(2, surname);
-                    preparedStatement.setString(3, middlename);
+                    preparedStatement.setString(3, middleName);
                     preparedStatement.setInt(4, id);
                     preparedStatement.executeUpdate();
                 }
@@ -210,8 +211,8 @@ public class UsersTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "UPDATE " + table + " SET Phone = ?, Email = ? WHERE id = ?";
+                String sql = SqlHelper.updateQuery(table, columns.getName("ID"),
+                        columns.getName("PHONE"), columns.getName("EMAIL"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, phone);
                     preparedStatement.setString(2, email);
@@ -229,10 +230,8 @@ public class UsersTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "UPDATE " + table + " SET Password = ? WHERE id = ?";
+                String sql = SqlHelper.updateQuery(table, columns.getName("ID"), columns.getName("PASSWORD"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
-                    System.out.println("All Ok");
                     preparedStatement.setString(1, _password);
                     preparedStatement.setInt(2, id);
                     preparedStatement.executeUpdate();

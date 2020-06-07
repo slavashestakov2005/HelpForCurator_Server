@@ -1,3 +1,7 @@
+/**
+ * Запросы к таблице chat_user из БД.
+ * */
+
 package com.example.tables;
 
 import com.example.Helper;
@@ -11,12 +15,21 @@ import java.util.ArrayList;
 
 public class ChatUserTable {
     private static String table = "chat_user";
+    private static Columns columns;
+
+    static{
+        columns = new Columns();
+        columns.add("ID_CHAT", 1, "id");
+        columns.add("ID_USER", 2, "id_user");
+        columns.add("TIME", 3, "time");
+    }
 
     public static int insert(ChatUser chatUser) {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-                String sql = "INSERT INTO " + table + " (id, id_user, time) Values (?, ?, ?)";
+                String sql = SqlHelper.insertQuery(table, columns.getName("ID_CHAT"),
+                        columns.getName("ID_USER"), columns.getName("TIME"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setInt(1, chatUser.getId());
                     preparedStatement.setInt(2, chatUser.getId_user());
@@ -36,14 +49,13 @@ public class ChatUserTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "SELECT id FROM " + table + " WHERE id_user = ? and time > ?";
+                String sql = SqlHelper.selectQuery(table, columns.getName("ID_CHAT"),
+                        columns.getName("ID_USER") + " = ? and " + columns.getName("TIME") + " > ?", true);
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setInt(1, user_id);
                     preparedStatement.setString(2, _time);
                     ResultSet resultSet = preparedStatement.executeQuery();
                     while (resultSet.next()){
-                        /** get Chat's id where is was User **/
                         int resId = resultSet.getInt(1);
                         chats.add(ChatTable.select(resId));
                     }
@@ -60,8 +72,7 @@ public class ChatUserTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "DELETE FROM " + table + " WHERE id = ? and id_user = ?";
+                String sql = SqlHelper.deleteQuery(table, columns.getName("ID_CHAT"), columns.getName("ID_USER"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setInt(1, chatUser.getId());
                     preparedStatement.setInt(2, chatUser.getId_user());

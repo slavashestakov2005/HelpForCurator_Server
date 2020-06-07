@@ -1,3 +1,7 @@
+/**
+ * Сервлет возвращает сообщения чата.
+ * **/
+
 package com.example.servlets;
 
 import com.example.Helper;
@@ -15,11 +19,13 @@ import java.util.ArrayList;
 @WebServlet("/messages_chat_after")
 public class MessagesChatAfterServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        /** Получение данных. **/
         int id_chat = Integer.parseInt(request.getParameter("id_chat"));
         String time = request.getParameter("time");
-        String queryTime = Helper.currentTime();
+        String queryTime = Helper.getCurrentTimeAsMicroseconds();
+        /** Запросы и ответ. **/
         ArrayList<Message> messages = MessageTable.getLastMessages(id_chat, time);
-        response.setContentType("text/html;charset=utf-8");
+        response.setContentType(Helper.ANSWER_HTML_TEXT);
         PrintWriter pw = response.getWriter();
         pw.println(queryTime + " | ");
         for(int i = 0; i < messages.size(); ++i){

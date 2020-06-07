@@ -1,3 +1,7 @@
+/**
+ * Вспомогательный класс для времени и подключения к БД.
+ * */
+
 package com.example;
 
 import java.sql.Connection;
@@ -10,28 +14,30 @@ public class Helper {
     static public String URL = "jdbc:mysql://localhost/" + DATABASE + "?serverTimezone=Europe/Moscow&useSSL=false";
     static public String USER = "root", PASSWORD = "postgres";
     static public String SQL_DRIVER = "com.mysql.cj.jdbc.Driver";
+    static public String ANSWER_HTML_TEXT = "text/html;charset=utf-8";
+    static public String ANSWER_ERROR = "error";
 
-    static public String getTime() {
+    static public String getFormattedCurrentTime() {
         Calendar calendar = Calendar.getInstance();
         StringBuilder builder = new StringBuilder();
         int time = calendar.get(calendar.DAY_OF_MONTH);
         if (time < 10) builder.append("0");
-        builder.append("" + time + ".");
+        builder.append(time).append(".");
         time = calendar.get(calendar.MONTH) + 1;
         if (time < 10) builder.append("0");
-        builder.append("" + time + ".");
+        builder.append(time).append(".");
         time = calendar.get(calendar.YEAR);
-        builder.append("" + time + " ");
+        builder.append(time).append(" ");
         time = calendar.get(calendar.AM_PM) * 12 + calendar.get(calendar.HOUR);
         if (time < 10) builder.append("0");
-        builder.append("" + time + ".");
+        builder.append(time).append(".");
         time = calendar.get(calendar.MINUTE);
         if (time < 10) builder.append("0");
-        builder.append("" + time);
+        builder.append(time);
         return builder.toString();
     }
 
-    static public String currentTime(){
+    static public String getCurrentTimeAsMicroseconds(){
         long l = System.currentTimeMillis();
         System.out.println("Current time : + " + l);
         return "" + l;

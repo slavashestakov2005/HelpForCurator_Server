@@ -1,3 +1,7 @@
+/**
+ * Запросы к таблице chat из БД.
+ * */
+
 package com.example.tables;
 
 import com.example.Helper;
@@ -9,20 +13,26 @@ import java.sql.ResultSet;
 
 public class ChatTable {
     private static String table = "chat";
+    private static Columns columns;
+
+    static{
+        columns = new Columns();
+        columns.add("ID", 1, "id");
+        columns.add("NAME", 2, "name");
+    }
 
     public static Chat select(int id){
         Chat chat = null;
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "SELECT * FROM " + table + " WHERE id=?";
+                String sql = SqlHelper.selectQuery(table, "*", columns.getName("ID"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setInt(1, id);
                     ResultSet resultSet = preparedStatement.executeQuery();
                     if(resultSet.next()){
-                        int resId = resultSet.getInt(1);
-                        String name = resultSet.getString(2);
+                        int resId = resultSet.getInt(columns.getIndex("ID"));
+                        String name = resultSet.getString(columns.getIndex("NAME"));
                         chat = new Chat(resId, name);
                     }
                 }
@@ -39,14 +49,13 @@ public class ChatTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "SELECT * FROM " + table + " WHERE name=?";
+                String sql = SqlHelper.selectQuery(table, "*", columns.getName("NAME"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, name);
                     ResultSet resultSet = preparedStatement.executeQuery();
                     if(resultSet.next()){
-                        int resId = resultSet.getInt(1);
-                        String resName = resultSet.getString(2);
+                        int resId = resultSet.getInt(columns.getIndex("ID"));
+                        String resName = resultSet.getString(columns.getIndex("NAME"));
                         chat = new Chat(resId, resName);
                     }
                 }
@@ -62,7 +71,7 @@ public class ChatTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-                String sql = "INSERT INTO " + table + " (name) Values (?)";
+                String sql = SqlHelper.insertQuery(table, columns.getName("NAME"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, chat.getName());
                     return preparedStatement.executeUpdate();
@@ -79,8 +88,7 @@ public class ChatTable {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
             try (Connection conn = Helper.getConnection()){
-
-                String sql = "SELECT id FROM " + table + " WHERE name = ?";
+                String sql = SqlHelper.selectQuery(table, columns.getName("ID"), columns.getName("NAME"));
                 try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
                     preparedStatement.setString(1, name);
                     ResultSet resultSet = preparedStatement.executeQuery();
