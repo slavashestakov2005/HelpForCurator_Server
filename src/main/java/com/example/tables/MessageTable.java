@@ -4,7 +4,7 @@
 
 package com.example.tables;
 
-import com.example.Helper;
+import com.example.help.Helper;
 import com.example.tables.rows.Message;
 
 import java.sql.Connection;
@@ -18,10 +18,10 @@ public class MessageTable {
 
     static{
         columns = new Columns();
-        columns.add("ID_CHAT", 1, "id_chat");
-        columns.add("ID_USER", 2, "id_user");
-        columns.add("TEXT", 3, "text");
-        columns.add("TIME", 4, "time");
+        columns.add("ID_CHAT", 1, "id_chat");       // int
+        columns.add("ID_USER", 2, "id_user");       // int
+        columns.add("TEXT", 3, "text");             // char(200)
+        columns.add("TIME", 4, "time");             // char(16)
     }
 
     public static int insert(Message message){

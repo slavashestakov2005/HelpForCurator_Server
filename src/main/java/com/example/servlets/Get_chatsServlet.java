@@ -4,7 +4,9 @@
 
 package com.example.servlets;
 
-import com.example.Helper;
+import com.example.help.Helper;
+import com.example.help.LongPull;
+import com.example.help.LongPullServlet;
 import com.example.tables.ChatUserTable;
 import com.example.tables.rows.Chat;
 
@@ -17,17 +19,39 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 @WebServlet("/get_chats")
-public class Get_chatsServlet extends HttpServlet {
+public class Get_chatsServlet extends HttpServlet implements LongPull {
+    String id, time, queryTime;
+    ArrayList<Chat> chats;
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        /** Получение данных. **/
-        String id = request.getParameter("id");
-        String time = request.getParameter("time");
-        String queryTime = Helper.getCurrentTimeAsMicroseconds();
-        /** Запросы и ответ. **/
-        ArrayList<Chat> chats = ChatUserTable.selectChatsForUser(Integer.parseInt(id), time);
+        new LongPullServlet(this).execute(request, response);
+    }
+
+    @Override
+    public void init(HttpServletRequest request) {
+        id = request.getParameter("id");
+        time = request.getParameter("time");
+        queryTime = null;
+        chats = null;
+    }
+
+    @Override
+    public void pullBody() {
+        queryTime = Helper.getCurrentTimeAsMicroseconds();
+        chats = ChatUserTable.selectChatsForUser(Integer.parseInt(id), time);
+    }
+
+    @Override
+    public boolean endLongPull() {
+        return chats != null && chats.size() > 0;
+    }
+
+    @Override
+    public void answer(HttpServletResponse response) throws IOException {
         response.setContentType(Helper.ANSWER_HTML_TEXT);
         PrintWriter pw = response.getWriter();
         pw.println(queryTime + " | ");
+        if (chats == null) return;
         for(int i = 0; i < chats.size(); ++i){
             pw.println(chats.get(i).toString() + " | ");
         }

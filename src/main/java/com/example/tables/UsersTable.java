@@ -4,7 +4,7 @@
 
 package com.example.tables;
 
-import com.example.Helper;
+import com.example.help.Helper;
 import com.example.tables.rows.User;
 
 import java.sql.*;
@@ -16,14 +16,14 @@ public class UsersTable {
 
     static{
         columns = new Columns();
-        columns.add("ID", 1, "id");
-        columns.add("LOGIN", 2, "login");
-        columns.add("PASSWORD", 3, "password");
-        columns.add("PHONE", 4, "phone");
-        columns.add("EMAIL", 5, "email");
-        columns.add("NAME", 6, "_name");
-        columns.add("SURNAME",7, "_surname");
-        columns.add("MIDDLENAME", 8, "_middlename");
+        columns.add("ID", 1, "id");                     // int  AI  PK
+        columns.add("LOGIN", 2, "login");               // varchar(45)
+        columns.add("PASSWORD", 3, "password");         // varchar(45)
+        columns.add("PHONE", 4, "phone");               // varchar(45)
+        columns.add("EMAIL", 5, "email");               // varchar(45)
+        columns.add("NAME", 6, "_name");                // varchar(45)
+        columns.add("SURNAME",7, "_surname");           // varchar(45)
+        columns.add("MIDDLENAME", 8, "_middlename");    // varchar(45)
     }
 
     private static User getUserFromResultSet(ResultSet resultSet) throws SQLException {

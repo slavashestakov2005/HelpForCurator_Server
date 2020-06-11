@@ -4,7 +4,7 @@
 
 package com.example.tables;
 
-import com.example.Helper;
+import com.example.help.Helper;
 import com.example.tables.rows.Chat;
 
 import java.sql.Connection;
@@ -17,8 +17,8 @@ public class ChatTable {
 
     static{
         columns = new Columns();
-        columns.add("ID", 1, "id");
-        columns.add("NAME", 2, "name");
+        columns.add("ID", 1, "id");         // int  AI  PK
+        columns.add("NAME", 2, "name");     // char(50)
     }
 
     public static Chat select(int id){

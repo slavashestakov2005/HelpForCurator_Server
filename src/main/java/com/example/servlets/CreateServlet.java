@@ -5,7 +5,7 @@
 
 package com.example.servlets;
 
-import com.example.Helper;
+import com.example.help.Helper;
 import com.example.tables.UsersTable;
 import com.example.tables.rows.User;
 

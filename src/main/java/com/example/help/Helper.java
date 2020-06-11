@@ -2,7 +2,7 @@
  * Вспомогательный класс для времени и подключения к БД.
  * */
 
-package com.example;
+package com.example.help;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

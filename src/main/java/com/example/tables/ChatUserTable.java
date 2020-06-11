@@ -4,7 +4,7 @@
 
 package com.example.tables;
 
-import com.example.Helper;
+import com.example.help.Helper;
 import com.example.tables.rows.Chat;
 import com.example.tables.rows.ChatUser;
 
@@ -19,9 +19,9 @@ public class ChatUserTable {
 
     static{
         columns = new Columns();
-        columns.add("ID_CHAT", 1, "id");
-        columns.add("ID_USER", 2, "id_user");
-        columns.add("TIME", 3, "time");
+        columns.add("ID_CHAT", 1, "id");        // int  PK
+        columns.add("ID_USER", 2, "id_user");   // int  PK
+        columns.add("TIME", 3, "time");         // varchar(16)
     }
 
     public static int insert(ChatUser chatUser) {
