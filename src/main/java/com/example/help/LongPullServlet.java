@@ -15,6 +15,7 @@ import java.io.IOException;
 public class LongPullServlet {
     private LongPull longPull;
     private long startTime;
+    private String queryTime;
 
     public LongPullServlet(LongPull longPull) {
         this.longPull = longPull;
@@ -25,6 +26,7 @@ public class LongPullServlet {
         long endTime = startTime + 15000;
         longPull.init(request);
         while(endTime > System.currentTimeMillis() && !longPull.endLongPull()){
+            queryTime = Helper.getCurrentTimeAsMicroseconds();
             longPull.pullBody();
             try {
                 Thread.sleep(1000);
@@ -32,6 +34,6 @@ public class LongPullServlet {
                 e.printStackTrace();
             }
         }
-        longPull.answer(response);
+        longPull.answer(response, queryTime);
     }
 }

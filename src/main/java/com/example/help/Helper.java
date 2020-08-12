@@ -16,6 +16,7 @@ public class Helper {
     static public String SQL_DRIVER = "com.mysql.cj.jdbc.Driver";
     static public String ANSWER_HTML_TEXT = "text/html;charset=utf-8";
     static public String ANSWER_ERROR = "error";
+    static public int SYSTEM_ID = 0;
 
     static public String getFormattedCurrentTime() {
         Calendar calendar = Calendar.getInstance();

@@ -5,6 +5,8 @@
 package com.example.servlets;
 
 import com.example.help.Helper;
+import com.example.help.ShortPull;
+import com.example.help.ShortPullServlet;
 import com.example.tables.MessageTable;
 
 import javax.servlet.annotation.WebServlet;
@@ -17,12 +19,30 @@ import java.io.PrintWriter;
 @WebServlet("/count_message_in_chat")
 public class CountMessageInChatServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        /** Получение данных. **/
-        int id_chat = Integer.parseInt(request.getParameter("id_chat"));
-        /** Запросы и ответ. **/
-        int count = MessageTable.countOfMessagesInChat(id_chat);
-        response.setContentType(Helper.ANSWER_HTML_TEXT);
-        PrintWriter pw = response.getWriter();
-        pw.println("" + count);
+        new ShortPullServlet(new Query()).execute(request, response);
+    }
+
+    class Query implements ShortPull{
+        /** parameters **/
+        int param_id_chat;
+        /** result **/
+        int count;
+
+        @Override
+        public void init(HttpServletRequest request) {
+            param_id_chat = Integer.parseInt(request.getParameter("id_chat"));
+        }
+
+        @Override
+        public void pullBody(String queryTime) {
+            count = MessageTable.countOfMessagesInChat(param_id_chat);
+        }
+
+        @Override
+        public void answer(HttpServletResponse response, String queryTime) throws IOException {
+            response.setContentType(Helper.ANSWER_HTML_TEXT);
+            PrintWriter pw = response.getWriter();
+            pw.println("" + count);
+        }
     }
 }

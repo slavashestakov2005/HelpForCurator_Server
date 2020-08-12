@@ -68,6 +68,28 @@ public class ChatUserTable {
         return chats;
     }
 
+    public static ArrayList<Integer> selectUserForChat(int chat_id){
+        ArrayList<Integer> users = new ArrayList<>();
+        try{
+            Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
+            try (Connection conn = Helper.getConnection()){
+                String sql = SqlHelper.selectQuery(table, columns.getName("ID_USER"),
+                        columns.getName("ID_CHAT"));
+                try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
+                    preparedStatement.setInt(1, chat_id);
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    while (resultSet.next()){
+                        int userId = resultSet.getInt(1);
+                        users.add(userId);
+                    }
+                }
+            }
+        }catch(Exception ex){
+            System.out.println(ex);
+        }
+        return users;
+    }
+
     public static int delete(ChatUser chatUser) {
         try{
             Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();

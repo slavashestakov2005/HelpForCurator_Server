@@ -19,41 +19,40 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 @WebServlet("/get_chats")
-public class Get_chatsServlet extends HttpServlet implements LongPull {
-    String id, time, queryTime;
-    ArrayList<Chat> chats;
-
+public class Get_chatsServlet extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        new LongPullServlet(this).execute(request, response);
+        new LongPullServlet(new Query()).execute(request, response);
     }
 
-    @Override
-    public void init(HttpServletRequest request) {
-        id = request.getParameter("id");
-        time = request.getParameter("time");
-        queryTime = null;
-        chats = null;
-    }
+    class Query implements LongPull{
+        /** parameters **/
+        String param_time;
+        int param_id;
+        /** result **/
+        ArrayList<Chat> chats;
 
-    @Override
-    public void pullBody() {
-        queryTime = Helper.getCurrentTimeAsMicroseconds();
-        chats = ChatUserTable.selectChatsForUser(Integer.parseInt(id), time);
-    }
+        public void init(HttpServletRequest request) {
+            param_id = Integer.parseInt(request.getParameter("id"));
+            param_time = request.getParameter("time");
+            chats = null;
+        }
 
-    @Override
-    public boolean endLongPull() {
-        return chats != null && chats.size() > 0;
-    }
+        public void pullBody() {
+            chats = ChatUserTable.selectChatsForUser(param_id, param_time);
+        }
 
-    @Override
-    public void answer(HttpServletResponse response) throws IOException {
-        response.setContentType(Helper.ANSWER_HTML_TEXT);
-        PrintWriter pw = response.getWriter();
-        pw.println(queryTime + " | ");
-        if (chats == null) return;
-        for(int i = 0; i < chats.size(); ++i){
-            pw.println(chats.get(i).toString() + " | ");
+        public boolean endLongPull() {
+            return chats != null && chats.size() > 0;
+        }
+
+        public void answer(HttpServletResponse response, String queryTime) throws IOException {
+            response.setContentType(Helper.ANSWER_HTML_TEXT);
+            PrintWriter pw = response.getWriter();
+            pw.println(queryTime + " | ");
+            if (chats == null) return;
+            for(int i = 0; i < chats.size(); ++i){
+                pw.println(chats.get(i).toString() + " | ");
+            }
         }
     }
 }

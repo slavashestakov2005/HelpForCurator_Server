@@ -6,6 +6,8 @@
 package com.example.servlets;
 
 import com.example.help.Helper;
+import com.example.help.ShortPull;
+import com.example.help.ShortPullServlet;
 import com.example.tables.ChatTable;
 import com.example.tables.rows.Chat;
 
@@ -19,22 +21,40 @@ import java.io.PrintWriter;
 @WebServlet("/create_chat")
 public class Create_chatServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        /** Получение данных. **/
-        String name = request.getParameter("name");
-        /** Запросы и ответ. **/
-        String idFromDataBase = ChatTable.idFromName(name);
-        if (!idFromDataBase.equals("")){
-            response.setContentType(Helper.ANSWER_HTML_TEXT);
-            PrintWriter writer = response.getWriter();
-            writer.println(Helper.ANSWER_ERROR);
+        new ShortPullServlet(new Query()).execute(request, response);
+    }
+
+    class Query implements ShortPull{
+        /** parameters **/
+        String param_name;
+        /** result **/
+        String idFromDataBase;
+
+        @Override
+        public void init(HttpServletRequest request) {
+            param_name = request.getParameter("name");
         }
-        else{
-            Chat chat = new Chat(name);
-            ChatTable.insert(chat);
-            String id = ChatTable.idFromName(name);
-            response.setContentType(Helper.ANSWER_HTML_TEXT);
-            PrintWriter writer = response.getWriter();
-            writer.println(id);
+
+        @Override
+        public void pullBody(String queryTime) {
+            idFromDataBase = ChatTable.idFromName(param_name);
+        }
+
+        @Override
+        public void answer(HttpServletResponse response, String queryTime) throws IOException {
+            if (!idFromDataBase.equals("")){
+                response.setContentType(Helper.ANSWER_HTML_TEXT);
+                PrintWriter writer = response.getWriter();
+                writer.println(Helper.ANSWER_ERROR);
+            }
+            else{
+                Chat chat = new Chat(param_name);
+                ChatTable.insert(chat);
+                String id = ChatTable.idFromName(param_name);
+                response.setContentType(Helper.ANSWER_HTML_TEXT);
+                PrintWriter writer = response.getWriter();
+                writer.println(id);
+            }
         }
     }
 }

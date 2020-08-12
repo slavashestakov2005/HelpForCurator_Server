@@ -6,6 +6,8 @@
 package com.example.servlets;
 
 import com.example.help.Helper;
+import com.example.help.ShortPull;
+import com.example.help.ShortPullServlet;
 import com.example.tables.UsersTable;
 import com.example.tables.rows.User;
 
@@ -19,28 +21,43 @@ import java.io.PrintWriter;
 @WebServlet("/create")
 public class CreateServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        /** Получение данных. **/
-        String login = request.getParameter("login");
-        String password = request.getParameter("password");
-        String phone = request.getParameter("phone");
-        String email = request.getParameter("email");
-        String name = request.getParameter("name");
-        String surname = request.getParameter("surname");
-        String middleName = request.getParameter("middlename");
-        /** Запросы и ответ. **/
-        User user = new User(login, password, phone, email, name, surname, middleName);
-        String passwordFromDataBase = UsersTable.passwordFromLogin(login);
-        if (!passwordFromDataBase.equals("")){
-            response.setContentType(Helper.ANSWER_HTML_TEXT);
-            PrintWriter writer = response.getWriter();
-            writer.println(Helper.ANSWER_ERROR);
+        new ShortPullServlet(new Query()).execute(request, response);
+    }
+
+    class Query implements ShortPull{
+        /** parameters **/
+        String param_login, param_password, param_phone, param_email, param_name, param_surname, param_middleName;
+        /** result **/
+        String passwordFromDataBase;
+        int id;
+
+        @Override
+        public void init(HttpServletRequest request) {
+            param_login = request.getParameter("login");
+            param_password = request.getParameter("password");
+            param_phone = request.getParameter("phone");
+            param_email = request.getParameter("email");
+            param_name = request.getParameter("name");
+            param_surname = request.getParameter("surname");
+            param_middleName = request.getParameter("middlename");
         }
-        else{
-            UsersTable.insert(user);
-            int id = UsersTable.select(login).getId();
+
+        @Override
+        public void pullBody(String queryTime) {
+            User user = new User(param_login, param_password, param_phone, param_email, param_name, param_surname, param_middleName);
+            passwordFromDataBase = UsersTable.passwordFromLogin(param_login);
+            if (passwordFromDataBase.equals("")){
+                UsersTable.insert(user);
+                id = UsersTable.select(param_login).getId();
+            }
+        }
+
+        @Override
+        public void answer(HttpServletResponse response, String queryTime) throws IOException {
             response.setContentType(Helper.ANSWER_HTML_TEXT);
             PrintWriter writer = response.getWriter();
-            writer.println(id);
+            if (passwordFromDataBase.equals("")) writer.println(id);
+            else writer.println(Helper.ANSWER_ERROR);
         }
     }
 }
