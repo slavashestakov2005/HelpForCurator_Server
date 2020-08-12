@@ -23,18 +23,18 @@ public class UpdateServlet extends HttpServlet {
     class Query implements ShortPull {
         /** parameters **/
         String param_type;
-        String param_name, param_surname, param_middleName, param_phone, param_email, param_password;
-        int param_id;
+        String param_name, param_surname, param_middle_name, param_phone, param_email, param_password;
+        int param_id_user;
 
         @Override
         public void init(HttpServletRequest request) {
             param_type = request.getParameter("type");
-            param_id = Integer.parseInt(request.getParameter("id"));
+            param_id_user = Integer.parseInt(request.getParameter("id_user"));
             switch (param_type){
                 case "name" :
                     param_name = request.getParameter("name");
                     param_surname = request.getParameter("surname");
-                    param_middleName = request.getParameter("middlename");
+                    param_middle_name = request.getParameter("middle_name");
                     break;
                 case "contacts" :
                     param_phone = request.getParameter("phone");
@@ -50,13 +50,13 @@ public class UpdateServlet extends HttpServlet {
         public void pullBody(String queryTime) {
             switch (param_type){
                 case "name":
-                    UsersTable.updateName(param_id, param_name, param_surname, param_middleName);
+                    UsersTable.updateName(param_id_user, param_name, param_surname, param_middle_name);
                     break;
                 case "contacts":
-                    UsersTable.updateContacts(param_id, param_phone, param_email);
+                    UsersTable.updateContacts(param_id_user, param_phone, param_email);
                     break;
                 case "password":
-                    UsersTable.updatePassword(param_id, param_password);
+                    UsersTable.updatePassword(param_id_user, param_password);
                     break;
             }
         }

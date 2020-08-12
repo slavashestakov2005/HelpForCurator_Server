@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/insert_to_chat")
-public class Insert_to_chatServlet extends HttpServlet {
+public class InsertToChatServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         new ShortPullServlet(new Query()).execute(request, response);
     }

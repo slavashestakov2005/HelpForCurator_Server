@@ -23,19 +23,19 @@ public class SendServlet extends HttpServlet {
 
     class Query implements ShortPull{
         /** parameters **/
-        int param_id_chat, param_id_author;
+        int param_id_chat, param_id_user;
         String param_text;
 
         @Override
         public void init(HttpServletRequest request) {
             param_id_chat = Integer.parseInt(request.getParameter("id_chat"));
-            param_id_author = Integer.parseInt(request.getParameter("id_author"));
+            param_id_user = Integer.parseInt(request.getParameter("id_user"));
             param_text = request.getParameter("text");
         }
 
         @Override
         public void pullBody(String queryTime) {
-            Message message = new Message(param_id_chat, param_id_author, param_text, queryTime);
+            Message message = new Message(param_id_chat, param_id_user, param_text, queryTime);
             MessageTable.insert(message);
         }
 

@@ -18,15 +18,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/create")
-public class CreateServlet extends HttpServlet {
+@WebServlet("/create_user")
+public class CreateUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         new ShortPullServlet(new Query()).execute(request, response);
     }
 
     class Query implements ShortPull{
         /** parameters **/
-        String param_login, param_password, param_phone, param_email, param_name, param_surname, param_middleName;
+        String param_login, param_password, param_phone, param_email, param_name, param_surname, param_middle_name;
         /** result **/
         String passwordFromDataBase;
         int id;
@@ -39,12 +39,12 @@ public class CreateServlet extends HttpServlet {
             param_email = request.getParameter("email");
             param_name = request.getParameter("name");
             param_surname = request.getParameter("surname");
-            param_middleName = request.getParameter("middlename");
+            param_middle_name = request.getParameter("middle_name");
         }
 
         @Override
         public void pullBody(String queryTime) {
-            User user = new User(param_login, param_password, param_phone, param_email, param_name, param_surname, param_middleName);
+            User user = new User(param_login, param_password, param_phone, param_email, param_name, param_surname, param_middle_name);
             passwordFromDataBase = UsersTable.passwordFromLogin(param_login);
             if (passwordFromDataBase.equals("")){
                 UsersTable.insert(user);

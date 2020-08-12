@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @WebServlet("/create_chat")
-public class Create_chatServlet extends HttpServlet {
+public class CreateChatServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         new ShortPullServlet(new Query()).execute(request, response);
     }

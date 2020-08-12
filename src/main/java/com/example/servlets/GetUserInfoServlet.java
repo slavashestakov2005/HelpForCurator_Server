@@ -25,18 +25,18 @@ public class GetUserInfoServlet extends HttpServlet {
 
     class Query implements ShortPull{
         /** parameters */
-        int param_id;
+        int param_id_user;
         /** result **/
         User user;
 
         @Override
         public void init(HttpServletRequest request) {
-            param_id = Integer.parseInt(request.getParameter("id"));
+            param_id_user = Integer.parseInt(request.getParameter("id_user"));
         }
 
         @Override
         public void pullBody(String queryTime) {
-           user = UsersTable.selectOne(param_id);
+           user = UsersTable.selectOne(param_id_user);
         }
 
         @Override

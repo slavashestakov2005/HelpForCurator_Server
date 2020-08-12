@@ -19,7 +19,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 @WebServlet("/get_chats")
-public class Get_chatsServlet extends HttpServlet{
+public class GetChatsServlet extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         new LongPullServlet(new Query()).execute(request, response);
     }
@@ -27,18 +27,18 @@ public class Get_chatsServlet extends HttpServlet{
     class Query implements LongPull{
         /** parameters **/
         String param_time;
-        int param_id;
+        int param_id_user;
         /** result **/
         ArrayList<Chat> chats;
 
         public void init(HttpServletRequest request) {
-            param_id = Integer.parseInt(request.getParameter("id"));
+            param_id_user = Integer.parseInt(request.getParameter("id_user"));
             param_time = request.getParameter("time");
             chats = null;
         }
 
         public void pullBody() {
-            chats = ChatUserTable.selectChatsForUser(param_id, param_time);
+            chats = ChatUserTable.selectChatsForUser(param_id_user, param_time);
         }
 
         public boolean endLongPull() {
