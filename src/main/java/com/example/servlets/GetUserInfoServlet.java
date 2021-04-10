@@ -5,6 +5,7 @@
 package com.example.servlets;
 
 import com.example.help.Helper;
+import com.example.help.JsonWriter;
 import com.example.help.ShortPull;
 import com.example.help.ShortPullServlet;
 import com.example.tables.UsersTable;
@@ -36,14 +37,15 @@ public class GetUserInfoServlet extends HttpServlet {
 
         @Override
         public void pullBody(String queryTime) {
-           user = UsersTable.selectOne(param_id_user);
+           user = UsersTable.selectById(param_id_user);
         }
 
         @Override
         public void answer(HttpServletResponse response, String queryTime) throws IOException {
-            response.setContentType(Helper.ANSWER_HTML_TEXT);
+            response.setContentType(Helper.ANSWER_JSON_TEXT);
+            response.setCharacterEncoding(Helper.CHARSET);
             PrintWriter pw = response.getWriter();
-            pw.println(user.getName() + " | " + user.getSurname());
+            pw.println("{\n" + JsonWriter.write("name", user.getName()) + ",\n" + JsonWriter.write("surname", user.getSurname()) + "\n}");
         }
     }
 }

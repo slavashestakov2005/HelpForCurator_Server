@@ -48,7 +48,7 @@ public class CreateUserServlet extends HttpServlet {
             passwordFromDataBase = UsersTable.passwordFromLogin(param_login);
             if (passwordFromDataBase.equals("")){
                 UsersTable.insert(user);
-                id = UsersTable.select(param_login).getId();
+                id = UsersTable.selectByLogin(param_login).getId();
             }
         }
 

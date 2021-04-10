@@ -36,14 +36,15 @@ public class InputServlet extends HttpServlet {
 
         @Override
         public void pullBody(String queryTime) {
-            user = UsersTable.select(param_login);
+            user = UsersTable.selectByLogin(param_login);
         }
 
         @Override
         public void answer(HttpServletResponse response, String queryTime) throws IOException {
-            response.setContentType(Helper.ANSWER_HTML_TEXT);
+            response.setContentType(Helper.ANSWER_JSON_TEXT);
+            response.setCharacterEncoding(Helper.CHARSET);
             PrintWriter writer = response.getWriter();
-            writer.println(user.toString());
+            writer.println(user.write());
         }
     }
 }

@@ -5,6 +5,7 @@
 package com.example.servlets;
 
 import com.example.help.Helper;
+import com.example.help.JsonWriter;
 import com.example.help.LongPull;
 import com.example.help.LongPullServlet;
 import com.example.tables.ChatUserTable;
@@ -46,13 +47,12 @@ public class GetChatsServlet extends HttpServlet{
         }
 
         public void answer(HttpServletResponse response, String queryTime) throws IOException {
-            response.setContentType(Helper.ANSWER_HTML_TEXT);
+            response.setContentType(Helper.ANSWER_JSON_TEXT);
+            response.setCharacterEncoding(Helper.CHARSET);
             PrintWriter pw = response.getWriter();
-            pw.println(queryTime + " | ");
-            if (chats == null) return;
-            for(int i = 0; i < chats.size(); ++i){
-                pw.println(chats.get(i).toString() + " | ");
-            }
+            pw.println("{\n\"time\" : " + queryTime + ",\n");
+            pw.println(JsonWriter.writeArray("chats", chats));
+            pw.println("\n}");
         }
     }
 }

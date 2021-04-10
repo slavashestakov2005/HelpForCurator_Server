@@ -5,6 +5,7 @@
 package com.example.servlets;
 
 import com.example.help.Helper;
+import com.example.help.JsonWriter;
 import com.example.help.ShortPull;
 import com.example.help.ShortPullServlet;
 import com.example.tables.ChatUserTable;
@@ -41,11 +42,10 @@ public class WhoInChatServlet extends HttpServlet {
 
         @Override
         public void answer(HttpServletResponse response, String queryTime) throws IOException {
-            response.setContentType(Helper.ANSWER_HTML_TEXT);
+            response.setContentType(Helper.ANSWER_JSON_TEXT);
+            response.setCharacterEncoding(Helper.CHARSET);
             PrintWriter pw = response.getWriter();
-            for(int i = 0; i < users.size(); ++i){
-                pw.println(users.get(i).toString() + " | ");
-            }
+            pw.println(JsonWriter.writeIntegers("users", users));
         }
     }
 }

@@ -40,7 +40,7 @@ public class InsertToChatServlet extends HttpServlet {
         public void pullBody(String queryTime) {
             ChatUser chatUser = new ChatUser(param_id_chat, param_id_user, queryTime);
             ChatUserTable.insert(chatUser);
-            User user = UsersTable.selectOne(param_id_user);
+            User user = UsersTable.selectById(param_id_user);
             String text = "Пользователь " + user.getSurname() + " " + user.getName() + " присоединился";
             Message message = new Message(param_id_chat, Helper.SYSTEM_ID, text, queryTime);
             MessageTable.insert(message);

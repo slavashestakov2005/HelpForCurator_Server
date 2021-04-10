@@ -4,46 +4,77 @@
 
 package com.example.tables.rows;
 
-import java.io.Serializable;
+import com.example.help.JsonWritable;
+import com.example.tables.ChatUserTable;
+import com.example.tables.DataBaseHelper;
+import com.example.tables.SqlHelper;
 
-public class ChatUser implements Serializable {
-    private static final long serialVersionUID = 1L;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static com.example.tables.ChatUserTable.columns;
+import static com.example.tables.SqlHelper.INT;
+import static com.example.tables.SqlHelper.STRING;
+
+public class ChatUser implements JsonWritable {
     private int id, id_user;
     private String time;
 
-    public ChatUser() {}
+    public ChatUser(boolean tyoe, int id, int id_user, String time) {
+        this.id = id;
+        this.id_user = id_user;
+        this.time = time;
+    }
 
     public ChatUser(int id, int id_user, String time) {
         this.id = id;
         this.id_user = id_user;
-        this.time = time;
+        this.time = DataBaseHelper.toSQL(time);
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getId_user() {
         return id_user;
-    }
-
-    public void setId_user(int id_user) {
-        this.id_user = id_user;
     }
 
     public String getTime() {
         return time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    @Override
+    public String toString() {
+        return "ChatUser{" +
+                "id=" + id +
+                ", id_user=" + id_user +
+                ", time='" + time + '\'' +
+                '}';
     }
 
-    public String toString(){
-        return "" + id + " | " + id_user;
+    public static ChatUser parseSQL(ResultSet resultSet) throws SQLException {
+        int chat = resultSet.getInt(columns.getIndex("ID_CHAT"));
+        int user = resultSet.getInt(columns.getIndex("id_USER"));
+        String  time = resultSet.getString(columns.getIndex("TIME"));
+        return new ChatUser(false, chat, user, time);
+    }
+
+    @Override
+    public String write() {
+        start();
+        addInt("id_chat", id);
+        addInt("id_user", id_user);
+        addString("time", time, false);
+        finish();
+        return jsonStringBuilder.toString();
+    }
+
+
+    public String insertString() {
+        return SqlHelper.insertQuery(ChatUserTable.table,
+                new String[]{ columns.getName("ID_CHAT"), columns.getName("ID_USER"), columns.getName("TIME") },
+                new Object[]{ id, id_user, time },
+                new boolean[]{ INT, INT, STRING });
     }
 }

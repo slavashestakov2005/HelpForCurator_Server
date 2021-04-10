@@ -14,7 +14,9 @@ public class Helper {
     static public String URL = "jdbc:mysql://localhost/" + DATABASE + "?serverTimezone=Europe/Moscow&useSSL=false";
     static public String USER = "root", PASSWORD = "postgres";
     static public String SQL_DRIVER = "com.mysql.cj.jdbc.Driver";
-    static public String ANSWER_HTML_TEXT = "text/html;charset=utf-8";
+    static public String ANSWER_HTML_TEXT = "text/html";
+    static public String ANSWER_JSON_TEXT = "application/json;chrset=utf-8";
+    static public String CHARSET = "utf-8";
     static public String ANSWER_ERROR = "error";
     static public int SYSTEM_ID = 0;
 

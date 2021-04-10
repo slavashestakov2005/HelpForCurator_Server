@@ -4,18 +4,16 @@
 
 package com.example.tables;
 
-import com.example.help.Helper;
 import com.example.tables.rows.Chat;
 import com.example.tables.rows.ChatUser;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ChatUserTable {
-    private static String table = "chat_user";
-    private static Columns columns;
+    public static String table = "chat_user";
+    public static Columns columns;
 
     static{
         columns = new Columns();
@@ -24,87 +22,48 @@ public class ChatUserTable {
         columns.add("TIME", 3, "time");         // varchar(16)
     }
 
-    public static int insert(ChatUser chatUser) {
-        try{
-            Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
-            try (Connection conn = Helper.getConnection()){
-                String sql = SqlHelper.insertQuery(table, columns.getName("ID_CHAT"),
-                        columns.getName("ID_USER"), columns.getName("TIME"));
-                try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
-                    preparedStatement.setInt(1, chatUser.getId());
-                    preparedStatement.setInt(2, chatUser.getId_user());
-                    preparedStatement.setString(3, chatUser.getTime());
-                    return preparedStatement.executeUpdate();
-                }
-            }
-        }
-        catch(Exception ex){
-            System.out.println(ex);
-        }
-        return 0;
+    public static void insert(ChatUser chatUser) {
+        DataBaseHelper.execute(chatUser.insertString());
     }
 
     public static ArrayList<Chat> selectChatsForUser(int user_id, String _time){
-        ArrayList<Chat> chats = new ArrayList<Chat>();
-        try{
-            Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
-            try (Connection conn = Helper.getConnection()){
-                String sql = SqlHelper.selectQuery(table, columns.getName("ID_CHAT"),
-                        columns.getName("ID_USER") + " = ? and " + columns.getName("TIME") + " > ?", true);
-                try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
-                    preparedStatement.setInt(1, user_id);
-                    preparedStatement.setString(2, _time);
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    while (resultSet.next()){
-                        int resId = resultSet.getInt(1);
-                        chats.add(ChatTable.select(resId));
-                    }
+        ArrayList<Chat> chats = new ArrayList<>();
+        try {
+            ResultSet resultSet = DataBaseHelper.executeQuery("SELECT " + columns.getName("ID_CHAT") + " FROM " + table + " WHERE " +
+                    columns.getName("ID_USER") + " = " + user_id + " and " + columns.getName("TIME") + " > '" + _time + "'");
+            if (resultSet != null) {
+                while (resultSet.next()) {
+                    int resId = resultSet.getInt(1);
+                    DataBaseHelper.push();
+                    chats.add(ChatTable.selectById(resId));
+                    DataBaseHelper.pop();
                 }
             }
-        }
-        catch(Exception ex){
-            System.out.println(ex);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return chats;
     }
 
     public static ArrayList<Integer> selectUserForChat(int chat_id){
         ArrayList<Integer> users = new ArrayList<>();
-        try{
-            Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
-            try (Connection conn = Helper.getConnection()){
-                String sql = SqlHelper.selectQuery(table, columns.getName("ID_USER"),
-                        columns.getName("ID_CHAT"));
-                try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
-                    preparedStatement.setInt(1, chat_id);
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    while (resultSet.next()){
-                        int userId = resultSet.getInt(1);
-                        users.add(userId);
-                    }
+        try {
+            ResultSet resultSet = DataBaseHelper.executeQuery("SELECT " + columns.getName("ID_USER") + " FROM " + table + " WHERE " +
+                    columns.getName("ID_CHAT") + " = " + chat_id);
+            if (resultSet != null) {
+                while (resultSet.next()) {
+                    int userId = resultSet.getInt(1);
+                    users.add(userId);
                 }
             }
-        }catch(Exception ex){
-            System.out.println(ex);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return users;
     }
 
-    public static int delete(ChatUser chatUser) {
-        try{
-            Class.forName(Helper.SQL_DRIVER).getDeclaredConstructor().newInstance();
-            try (Connection conn = Helper.getConnection()){
-                String sql = SqlHelper.deleteQuery(table, columns.getName("ID_CHAT"), columns.getName("ID_USER"));
-                try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
-                    preparedStatement.setInt(1, chatUser.getId());
-                    preparedStatement.setInt(2, chatUser.getId_user());
-                    return preparedStatement.executeUpdate();
-                }
-            }
-        }
-        catch(Exception ex){
-            System.out.println(ex);
-        }
-        return 0;
+    public static void delete(ChatUser chatUser) {
+        DataBaseHelper.execute("DELETE FROM " + table + " WHERE " + columns.getName("ID_CHAT") + " = " + chatUser.getId() + " and " +
+                columns.getName("ID_USER") + " = " + chatUser.getId_user());
     }
 }

@@ -28,7 +28,7 @@ public class CreateChatServlet extends HttpServlet {
         /** parameters **/
         String param_name;
         /** result **/
-        String idFromDataBase;
+        int idFromDataBase;
 
         @Override
         public void init(HttpServletRequest request) {
@@ -42,7 +42,7 @@ public class CreateChatServlet extends HttpServlet {
 
         @Override
         public void answer(HttpServletResponse response, String queryTime) throws IOException {
-            if (!idFromDataBase.equals("")){
+            if (idFromDataBase == 0){
                 response.setContentType(Helper.ANSWER_HTML_TEXT);
                 PrintWriter writer = response.getWriter();
                 writer.println(Helper.ANSWER_ERROR);
@@ -50,7 +50,7 @@ public class CreateChatServlet extends HttpServlet {
             else{
                 Chat chat = new Chat(param_name);
                 ChatTable.insert(chat);
-                String id = ChatTable.idFromName(param_name);
+                int id = ChatTable.idFromName(param_name);
                 response.setContentType(Helper.ANSWER_HTML_TEXT);
                 PrintWriter writer = response.getWriter();
                 writer.println(id);
